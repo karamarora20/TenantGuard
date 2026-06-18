@@ -19,8 +19,8 @@ async def login(
 ):
     try:      
         user:User= await auth_service.get_user_by_email(db, credentials.email)
-        user=user.__dict__
         if user:
+            user=user.__dict__
             logger.debug(f"Verifying password for user: {credentials.email}")
             if not verify_password(credentials.password, user["hashed_password"]):
                 return HTTPResponse(
