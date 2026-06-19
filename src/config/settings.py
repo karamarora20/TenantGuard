@@ -7,7 +7,7 @@ db_password = quote_plus("")
 
 
 class Settings(BaseSettings):
-    database_url: str =  f"postgresql+asyncpg://postgres:{db_password}@localhost:5432/saas_db"
+    database_url: str =  f"postgresql+asyncpg://app_user:{db_password}@localhost:5432/saas_db"
     jwt_secret: str = "temp secret #1992"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
