@@ -106,3 +106,28 @@ INSERT INTO users (id, tenant_id, email, hashed_password, role) VALUES
      'admin@acme.com', 'REPLACE_WITH_REAL_BCRYPT_HASH', 'admin'),
     ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '22222222-2222-2222-2222-222222222222',
      'admin@globex.com', 'REPLACE_WITH_REAL_BCRYPT_HASH', 'admin');
+
+
+CREATE ROLE app_user
+LOGIN
+PASSWORD 'password123';
+
+GRANT CONNECT ON DATABASE saas_db TO app_user;
+GRANT USAGE ON SCHEMA public TO app_user;
+
+GRANT app_login_role TO app_user;
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON users
+TO app_user;
+
+GRANT SELECT
+ON tenants
+TO app_user;
+
+GRANT SELECT, INSERT
+ON api_usage
+TO app_user;
+
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON orders
+TO app_user;
