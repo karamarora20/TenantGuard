@@ -15,6 +15,15 @@ pnpm-debug.log*
 logs/
 *.log
 
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+src/__pycache__/
+src/**/*.pyc
+
 # Build output
 dist/
 build/
