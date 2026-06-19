@@ -46,7 +46,7 @@ class Order(Base):
         nullable=False,
         index=True,
     )
-    created_by = Column(Integer, ForeignKey('users.id'), nullable=False)
+    created_by = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     customer_name = Column(String, nullable=False)
     amount = Column(
         Numeric(12, 2),
