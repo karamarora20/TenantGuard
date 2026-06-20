@@ -6,6 +6,23 @@ from sqlalchemy.exc import NoResultFound
 
 logger = get_logger(__name__)
 
+async def get_tenant_plan(tenant_id: str,db: AsyncSession) -> str:
+    """Fetches the tenant's plan from the database. This is used in the rate limiting logic to determine which tier of rate limits to apply."""
+    logger.info(f"Fetching plan for tenant_id: {tenant_id}")
+    try:
+        
+            stmt = select(Tenant.plan).where(Tenant.id == tenant_id)
+            result = await db.execute(stmt)
+            plan_row = result.scalar_one_or_none()
+            if plan_row:
+                logger.info(f"Tenant {tenant_id} has plan: {plan_row}")
+                return plan_row
+            else:
+                logger.warning(f"No tenant found with id: {tenant_id}. Defaulting to 'free' plan.")
+                return "free"
+    except Exception as e:
+        logger.error(f"Error fetching tenant plan for tenant_id {tenant_id}: {e}")
+        return "free"  # default to free on error to avoid blocking requests
 
 async def get_tenant_by_email(db: AsyncSession, tenant_email: str) -> Tenant | None:
 
