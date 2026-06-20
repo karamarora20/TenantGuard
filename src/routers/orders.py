@@ -3,7 +3,8 @@ from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.service import order_service
 from src.db.connection import get_tenant_db
-from src.config.security import auth_middleware, require_role
+from src.config.security import  require_role
+from src.utils.middleware import auth_middleware
 from src.models.schemas import OrderCreate, OrderResponse
 from src.utils.logger import get_logger
 
