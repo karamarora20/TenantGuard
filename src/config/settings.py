@@ -11,7 +11,8 @@ class Settings(BaseSettings):
     jwt_secret: str = "temp secret #1992"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
-    LOG_LEVEL: str = "DEBUG"
+    LOG_LEVEL: str = "INFO"
+    EXEMPT_PATHS: set[str] = {"/health", "/auth/login", "/docs", "/openapi.json", "/redoc"}
 
     # Rate limit tiers: requests allowed per 60-second sliding window
     rate_limits: dict = {
