@@ -37,22 +37,6 @@ def create_access_token(tenant_id: str, user_id: str, role: str) -> str:
     return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
 
 
-async def auth_middleware(request: Request, credentials: HTTPAuthorizationCredentials = Depends(security)):
-    try:
-        token=credentials.credentials
-        payload = jwt.decode(
-            token, settings.jwt_secret, algorithms=[settings.jwt_algorithm]
-        )
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
-
-    request.state.tenant_id = payload.get("tenant_id")
-    request.state.user_id = payload.get("sub")
-    request.state.user_role = payload.get("role")
-
-    if not request.state.tenant_id or not request.state.user_role:
-        raise HTTPException(status_code=401, detail="Malformed token claims")
-
 
 def require_role(allowed_roles: list[str]):
     """Dependency factory for per-route authorization.
