@@ -4,29 +4,29 @@ from sqlalchemy import select, text
 from src.utils.logger import get_logger
 from sqlalchemy.exc import NoResultFound
 
-logger = get_logger(__name__)
+_logger = get_logger(__name__)
 
 async def get_tenant_plan(tenant_id: str,db: AsyncSession) -> str:
     """Fetches the tenant's plan from the database. This is used in the rate limiting logic to determine which tier of rate limits to apply."""
-    logger.info(f"Fetching plan for tenant_id: {tenant_id}")
+    _logger.info(f"Fetching plan for tenant_id: {tenant_id}")
     try:
         
             stmt = select(Tenant.plan).where(Tenant.id == tenant_id)
             result = await db.execute(stmt)
             plan_row = result.scalar_one_or_none()
             if plan_row:
-                logger.info(f"Tenant {tenant_id} has plan: {plan_row}")
+                _logger.info(f"Tenant {tenant_id} has plan: {plan_row}")
                 return plan_row
             else:
-                logger.warning(f"No tenant found with id: {tenant_id}. Defaulting to 'free' plan.")
+                _logger.warning(f"No tenant found with id: {tenant_id}. Defaulting to 'free' plan.")
                 return "free"
     except Exception as e:
-        logger.error(f"Error fetching tenant plan for tenant_id {tenant_id}: {e}")
+        _logger.error(f"Error fetching tenant plan for tenant_id {tenant_id}: {e}")
         return "free"  # default to free on error to avoid blocking requests
 
 async def get_tenant_by_email(db: AsyncSession, tenant_email: str) -> Tenant | None:
 
-    logger.info(f"Looking up tenant by email: {tenant_email}")
+    _logger.info(f"Looking up tenant by email: {tenant_email}")
     try:
         result = await db.execute(
             select(Tenant).where(Tenant.tenant_email == tenant_email)
@@ -34,15 +34,15 @@ async def get_tenant_by_email(db: AsyncSession, tenant_email: str) -> Tenant | N
         tenant = result.scalar_one_or_none()
         return tenant
     except NoResultFound:
-        logger.info(f"No tenant found with email: {tenant_email}")
+        _logger.info(f"No tenant found with email: {tenant_email}")
         tenant = None
     except Exception as e:
-        logger.error(f"Error occurred while looking up tenant: {e}")
+        _logger.error(f"Error occurred while looking up tenant: {e}")
         tenant = None
     
 
 async def get_user_by_email(db: AsyncSession, email: str) -> User | None:
-    logger.info(f"Looking up user by email: {email}")
+    _logger.info(f"Looking up user by email: {email}")
     try:
         result = await db.execute(
             select(User).where(User.email == email)
@@ -50,10 +50,10 @@ async def get_user_by_email(db: AsyncSession, email: str) -> User | None:
         user = result.scalar_one_or_none()
         return user
     except NoResultFound:
-        logger.info(f"No user found with email: {email}")
+        _logger.info(f"No user found with email: {email}")
         user = None
     except Exception as e:
-        logger.error(f"Error occurred while looking up user: {e}")
+        _logger.error(f"Error occurred while looking up user: {e}")
         user = None
     
     
@@ -65,14 +65,14 @@ async def create_tenant(db: AsyncSession, tenant_email: str, plan: str=None) -> 
         await db.refresh(new_tenant)
         return new_tenant
     except Exception as e:
-        logger.error(f"Error occurred while creating tenant: {e}")
+        _logger.error(f"Error occurred while creating tenant: {e}")
         raise
 
 async def create_user(db: AsyncSession, email: str, hashed_password: str, tenant: str) -> User:
     try:
         tenant_obj = await get_tenant_by_email(db, tenant)
         if not tenant_obj:
-            logger.error(f"Tenant not found for email: {tenant}")
+            _logger.error(f"Tenant not found for email: {tenant}")
             raise ValueError("Tenant not found")
         await db.execute(
         text(
@@ -92,5 +92,5 @@ async def create_user(db: AsyncSession, email: str, hashed_password: str, tenant
         await db.refresh(new_user)
         return new_user
     except Exception as e:
-        logger.error(f"Error occurred while creating user: {e}")
+        _logger.error(f"Error occurred while creating user: {e}")
         raise
