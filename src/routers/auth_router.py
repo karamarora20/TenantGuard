@@ -11,7 +11,7 @@ import http
 from src.models.schemas import HTTPResponse
 
 router = APIRouter(prefix="/auth", tags=["auth"])
-logger= get_logger(__name__)
+_logger= get_logger(__name__)
 
 @router.post("/login", response_model=HTTPResponse)
 async def login(
@@ -21,7 +21,7 @@ async def login(
         user:User= await auth_service.get_user_by_email(db, credentials.email)
         if user:
             user=user.__dict__
-            logger.debug(f"Verifying password for user: {credentials.email}")
+            _logger.debug(f"Verifying password for user: {credentials.email}")
             if not verify_password(credentials.password, user["hashed_password"]):
                 return HTTPResponse(
                     data=None,
@@ -41,7 +41,7 @@ async def login(
             )
         else: # create user on the fly if it doesn't exist.
             tenant= credentials.email.split("@")[1]
-            logger.debug(f"Creating new user for tenant: {tenant} and email: {credentials.email}")
+            _logger.debug(f"Creating new user for tenant: {tenant} and email: {credentials.email}")
             new_user = await auth_service.create_user(
                 db, email=credentials.email, hashed_password=hash_password(credentials.password), tenant=tenant
             )
@@ -50,19 +50,15 @@ async def login(
                 user_id=str(new_user.id),
                 role=new_user.role,
             )
-            logger.info(f"User created and logged in successfully: {credentials.email}")
+            _logger.info(f"User created and logged in successfully: {credentials.email}")
             return HTTPResponse(
                 data={"access_token": token},
                 message="User created and logged in successfully",
                 status=http.HTTPStatus.CREATED
             )
     except Exception as e:
-        logger.error(f"Login error: {e}")
-        return  HTTPResponse(
-            data=None,
-            message="Login failed",
-            status=http.HTTPStatus.INTERNAL_SERVER_ERROR
-        )
+        _logger.error(f"Login error: {e}")
+        raise e
        
 
 
