@@ -12,15 +12,15 @@ pwd_context = CryptContext(
     deprecated="auto"
 )
 security = HTTPBearer()
-logger= get_logger(__name__)
+_logger= get_logger(__name__)
 
 def hash_password(plain_password: str) -> str:
-    logger.debug(f"Hashing password {plain_password}")
+    _logger.debug(f"Hashing password {plain_password}")
     return pwd_context.hash(plain_password)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    logger.debug("Verifying password for user")
+    _logger.debug("Verifying password for user")
     return pwd_context.verify(plain_password, hashed_password)
 
 
