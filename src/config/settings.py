@@ -20,6 +20,17 @@ class Settings(BaseSettings):
         "pro": 600,
         "enterprise": 6000,
     }
+    MONTHLY_LIMITS:dict[str,int] = {
+    "free": 10_000,
+    "pro": 500_000,
+    "enterprise": 10_000_000,
+}
+
+    OVERAGE_RATE_PER_1000:dict[str,float] = {
+        "free": 0.00,   # free plan gets hard-cut, no overage allowed
+        "pro": 0.50,    # $0.50 per 1000 requests over limit
+        "enterprise": 0.20,
+    }
 
     redis_url: str = "redis://localhost:6379/0"
 
