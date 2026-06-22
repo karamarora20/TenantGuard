@@ -131,3 +131,5 @@ TO app_user;
 GRANT SELECT, INSERT, UPDATE, DELETE
 ON orders
 TO app_user;
+
+GRANT USAGE, SELECT ON SEQUENCE api_usage_id_seq TO your_user;
