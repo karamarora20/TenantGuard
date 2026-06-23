@@ -52,8 +52,9 @@ async def delete_order(
     try:
         _logger.info(f"Deleting order with id: {order_id}")
         result = await order_service.delete_order(db, order_id)
-        await db.commit()
-        if result.rowcount == 0:
+        if result:
+            await db.commit()
+        else:
             raise HTTPException(status_code=404, detail="Order not found")
     except Exception as e:
         db.rollback()
