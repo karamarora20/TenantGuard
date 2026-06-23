@@ -30,7 +30,7 @@ async def general_exception_handler(request, exc):
 
 app.include_router(auth_router.router)
 app.include_router(order_router.router)
-app.include_router(usage_router.router)
+app.include_router(api_usage_router.router)
 
 app.middleware("http")(rate_limit_middleware)
 
