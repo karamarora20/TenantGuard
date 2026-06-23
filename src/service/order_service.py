@@ -41,3 +41,19 @@ async def create_order(db: AsyncSession, order: OrderCreate, user_id: str, tenan
     except Exception as e:
         _logger.error(f"Error inserting order: {e}")
         raise
+async def delete_order(db: AsyncSession, order_id: str) -> bool:
+    try:
+        _logger.info(f"Executing delete order for order id {order_id}")
+        stmt = select(Order).where(Order.id == order_id)
+        result = await db.execute(stmt)
+        order_obj = result.scalar_one_or_none()
+
+        if order_obj is None:
+            _logger.info(f"No order found for order id {order_id}")
+            return False
+
+        await db.delete(order_obj)
+        return True
+    except Exception as e:
+        _logger.error(f"Delete failed for order id {order_id}: {e}")
+        raise
