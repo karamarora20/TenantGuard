@@ -7,10 +7,13 @@ from sqlalchemy.exc import ProgrammingError
 
 _logger = get_logger(__name__)
 
-async def get_orders(db: AsyncSession) -> list[Order]:
+async def get_orders(db: AsyncSession, user_role:str,user_id:str=None) -> list[Order]:
     try:
         _logger.info("Executing get_orders query")
         stmt = select(Order).order_by(Order.created_at.desc())
+        if user_role.lower()=='member': # allow a member to list his creations only
+            stmt=select(Order).where(Order.created_by== user_id).order_by(Order.created_at.desc())
+
         result = await db.execute(stmt)
         orders = result.scalars().all()
         return orders
