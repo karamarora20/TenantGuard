@@ -19,7 +19,8 @@ _logger = get_logger(__name__)
 async def list_orders(db: AsyncSession = Depends(get_tenant_db), request: Request = None):
     try:
         _logger.info("Fetching orders for tenant")
-        orders = await order_service.get_orders(db)
+        user_role,user_id=request.state.user_role,request.state.user_id
+        orders = await order_service.get_orders(db,user_role,user_id)
         return [OrderResponse.from_orm(r) for r in orders]
     except Exception as e:
         _logger.error(f"Error fetching orders: {e}")
@@ -56,7 +57,9 @@ async def delete_order(
             await db.commit()
         else:
             raise HTTPException(status_code=404, detail="Order not found")
+    except HTTPException:
+        raise
     except Exception as e:
-        db.rollback()
+        await db.rollback()
         _logger.error(f"Error deleting order: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
